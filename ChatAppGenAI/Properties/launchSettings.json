@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Profile 1": {
+      "commandName": "MsixPackage",
+      "hotReloadEnabled": false
+    },
+    "Profile 2": {
+      "commandName": "Project",
+      "hotReloadEnabled": true
+    }
+  }
+}

@@ -1,0 +1,148 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+	  <TargetPlatformVersion>10.0.19041.0</TargetPlatformVersion>
+	  <SupportedOsPlatformVersion>10.0.19041.0</SupportedOsPlatformVersion>
+    <RootNamespace>ChatAppGenAI</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+	  <UseRidGraph>false</UseRidGraph>
+    <Platforms>x86;x64;</Platforms>
+    <UseWinUI>true</UseWinUI>
+    <EnableMsixTooling>true</EnableMsixTooling>
+  <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+  <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\SplashScreen.scale-200.png" />
+    <Content Include="Assets\LockScreenLogo.scale-200.png" />
+    <Content Include="Assets\Square150x150Logo.scale-200.png" />
+    <Content Include="Assets\Square44x44Logo.scale-200.png" />
+    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
+    <Content Include="Assets\StoreLogo.png" />
+    <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="Microsoft.ML.OnnxRuntimeGenAI.DirectML" Version="0.11.4" />
+    <PackageReference Include="Microsoft.SemanticKernel" Version="1.68.0" />
+    <PackageReference Include="Microsoft.SemanticKernel.Agents.Core" Version="1.68.0" />
+    <PackageReference Include="Microsoft.SemanticKernel.Connectors.Onnx" Version="1.68.0-alpha" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.251106002" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.Runtime" Version="1.8.251106002" />
+  </ItemGroup>
+
+
+
+
+
+	<ItemGroup>
+		<Reference Remove="Microsoft.Web.WebView2.Wpf" />
+		<Reference Remove="Microsoft.Web.WebView2.WinForms" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Update="Microsoft.Web.WebView2.Core" ExcludeAssets="runtime" />
+	</ItemGroup>
+	
+	
+
+  <!-- 
+    Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
+    Tools extension to be activated for this project even if the Windows App SDK Nuget
+    package has not yet been restored.
+  -->
+  <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+    <ProjectCapability Include="Msix" />
+  </ItemGroup>
+<ItemGroup>
+  <None Update="DirectML.dll" Pack="false" />
+</ItemGroup>
+<PropertyGroup Label="Globals" Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+  <Microsoft_AI_DirectML_SkipLibraryCopy>True</Microsoft_AI_DirectML_SkipLibraryCopy>
+  <Microsoft_AI_DirectML_SkipDebugLayerCopy>True</Microsoft_AI_DirectML_SkipDebugLayerCopy>
+  <Microsoft_AI_DirectML_SkipIncludeDir>True</Microsoft_AI_DirectML_SkipIncludeDir>
+  <Microsoft_AI_DirectML_SkipLink>True</Microsoft_AI_DirectML_SkipLink>
+</PropertyGroup>
+<PropertyGroup Label="Globals" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+  <Microsoft_AI_DirectML_SkipLibraryCopy>True</Microsoft_AI_DirectML_SkipLibraryCopy>
+  <Microsoft_AI_DirectML_SkipDebugLayerCopy>True</Microsoft_AI_DirectML_SkipDebugLayerCopy>
+  <Microsoft_AI_DirectML_SkipIncludeDir>True</Microsoft_AI_DirectML_SkipIncludeDir>
+  <Microsoft_AI_DirectML_SkipLink>True</Microsoft_AI_DirectML_SkipLink>
+</PropertyGroup>
+<PropertyGroup Label="Globals" Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+  <Microsoft_AI_DirectML_SkipLibraryCopy>True</Microsoft_AI_DirectML_SkipLibraryCopy>
+  <Microsoft_AI_DirectML_SkipDebugLayerCopy>True</Microsoft_AI_DirectML_SkipDebugLayerCopy>
+  <Microsoft_AI_DirectML_SkipIncludeDir>True</Microsoft_AI_DirectML_SkipIncludeDir>
+  <Microsoft_AI_DirectML_SkipLink>True</Microsoft_AI_DirectML_SkipLink>
+</PropertyGroup>
+<PropertyGroup Label="Globals" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+  <Microsoft_AI_DirectML_SkipLibraryCopy>True</Microsoft_AI_DirectML_SkipLibraryCopy>
+  <Microsoft_AI_DirectML_SkipDebugLayerCopy>True</Microsoft_AI_DirectML_SkipDebugLayerCopy>
+  <Microsoft_AI_DirectML_SkipIncludeDir>True</Microsoft_AI_DirectML_SkipIncludeDir>
+  <Microsoft_AI_DirectML_SkipLink>True</Microsoft_AI_DirectML_SkipLink>
+</PropertyGroup>
+<PropertyGroup Label="Globals">
+  <WebView2EnableCsWinRTProjection>False</WebView2EnableCsWinRTProjection>
+</PropertyGroup>
+
+  <!-- 
+    Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution 
+    Explorer "Package and Publish" context menu entry to be enabled for this project even if 
+    the Windows App SDK Nuget package has not yet been restored.
+  -->
+  <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+    <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <IsPublishable>False</IsPublishable>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IsPublishable>False</IsPublishable>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <IsPublishable>False</IsPublishable>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IsPublishable>False</IsPublishable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Remove="C:\Users\TommyCat\.nuget\packages\microsoft.ai.directml\1.15.4\build\..\bin\x64-win\DirectML.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="C:\Users\TommyCat\.nuget\packages\microsoft.ai.directml\1.15.4\build\..\bin\x64-win\DirectML.pdb" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="C:\Users\TommyCat\.nuget\packages\microsoft.ai.directml\1.15.4\build\..\bin\x64-win\DirectML.Debug.pdb" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="C:\Users\TommyCat\.nuget\packages\microsoft.ai.directml\1.15.4\build\..\bin\x64-win\DirectML.Debug.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="C:\Users\TommyCat\.nuget\packages\microsoft.ml.onnxruntime.directml\1.23.0\build\netstandard2.1\..\..\runtimes\win-x64\native\onnxruntime.dll" />
+    <None Remove="C:\Users\TommyCat\.nuget\packages\microsoft.ml.onnxruntime.directml\1.23.0\build\netstandard2.1\..\..\runtimes\win-x64\native\onnxruntime_providers_shared.dll" />
+    <None Remove="C:\Users\TommyCat\.nuget\packages\microsoft.ml.onnxruntimegenai.directml\0.11.4\build\net8.0\..\..\runtimes\win-x64\native\onnxruntime-genai.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="C:\Users\TommyCat\.nuget\packages\microsoft.web.webview2\1.0.3179.45\build\\..\runtimes\win-x64\native\WebView2Loader.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="C:\Users\TommyCat\.nuget\packages\microsoft.web.webview2\1.0.3179.45\build\\..\runtimes\win-x64\native\WebView2Loader.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="C:\Users\TommyCat\.nuget\packages\microsoft.web.webview2\1.0.3179.45\build\\..\runtimes\win-x64\native\WebView2Loader.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="C:\Users\TommyCat\.nuget\packages\microsoft.web.webview2\1.0.3179.45\build\\..\runtimes\win-x64\native\WebView2Loader.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="C:\Users\TommyCat\.nuget\packages\microsoft.web.webview2\1.0.3179.45\build\\..\runtimes\win-x64\native\WebView2Loader.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="C:\Users\TommyCat\.nuget\packages\microsoft.web.webview2\1.0.3179.45\build\\..\runtimes\win-x64\native\WebView2Loader.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="C:\Users\TommyCat\.nuget\packages\microsoft.web.webview2\1.0.3179.45\build\\..\runtimes\win-x64\native\WebView2Loader.dll" />
+  </ItemGroup>
+</Project>
