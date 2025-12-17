@@ -1,37 +1,49 @@
-# [Sample] Phi4 128k Agentic Model in WinUI3 App
+# Phi4 AgenticAI WinUI3 Example
 
-## Set Up
+## Overview
+This repository contains a WinUI 3 desktop chat client that runs entirely on-device against a local Phi-4 ONNX model. The UI is implemented with the Windows App SDK and CommunityToolkit.Mvvm, while inference is handled through Microsoft.ML.OnnxRuntimeGenAI with the DirectML execution provider. Microsoft Semantic Kernel maintains a rolling chat history so every response is grounded in previous turns.
 
-You will need to have Visual Studio installed with the latest workloads for WinAppSDK and WinUI 3 development. You can find instructions on how to set up your environment [here.](https://learn.microsoft.com/en-us/windows/apps/windows-app-sdk/set-up-your-development-environment?tabs=cs-vs-community%2Ccpp-vs-community%2Cvs-2022-17-1-a%2Cvs-2022-17-1-b#install-visual-studio)
+## Key Components
+- `ChatAppGenAI/ChatAppGenAI.csproj` – WinUI 3 application targeting `net8.0-windows10.0.19041.0`, referencing Windows App SDK 1.8, CommunityToolkit.Mvvm, Semantic Kernel, and OnnxRuntime GenAI packages.
+- `ChatAppGenAI/MainWindow.xaml(.cs)` – Declarative chat surface plus the `VM` view-model that wires UI commands to the Phi runner.
+- `ChatAppGenAI/Phi4Runner.cs` – Loads the Phi-4 weights, initializes Semantic Kernel, and exposes `GenerateStreamingResponseAsync` for token-by-token streaming output.
+- `ChatAppGenAI/Message.cs` – Observable message model that the XAML view binds to for chat rendering.
 
-Clone the repository or download the files and save them all into sub folder. and open the solution in Visual Studio. Before you can get started exploring the sample, you will need to get the Phi4 model files required for the project.
-The model I used here is one of the Phi4-Mini-Instruct-onnx family models which features an 128k token context window and is optimized. The specific flavor is great for small environments.
+## Prerequisites
+- Windows 10/11 build 19041 or later.
+- Visual Studio 2022 17.10+ with the ".NET Desktop Development" and "Windows App SDK" workloads, or the .NET 8 SDK plus Windows App SDK runtime.
+- DirectX 12–capable GPU/driver for DirectML acceleration.
+- Local Phi-4 ONNX model files (see below).
 
-This example uses Semantic Kernel to demonstrate how to turn these ready made AI models into a powerful coding partner or targeted system tool. With the large context window this configuration is ideal for large tasks or complex tasks. Each turn in the conversation is fed back into model with each subsequent turn.
+## Model Setup
+1. Download a Phi-4 ONNX checkpoint that exposes `model.onnx`, tokenizer assets, and `genai_config.json` (for example, from the official Microsoft Hugging Face releases).
+2. Place the files under `ChatAppGenAI/Phi4/` so the layout matches:
+   ```
+   ChatAppGenAI/Phi4/
+   ├── model.onnx
+   ├── tokenizer.json
+   ├── tokenizer_config.json
+   ├── special_tokens_map.json
+   ├── added_tokens.json
+   └── ...
+   ```
+3. If you prefer another location, update the `pathHead` constant in `ChatAppGenAI/Phi4Runner.cs` to point at your directory.
 
-## Downloading Phi4
+## Build & Run
+1. Restore packages: `dotnet restore ChatAppGenAI/ChatAppGenAI.csproj`.
+2. Build for x64 (DirectML requires it): `dotnet build ChatAppGenAI/ChatAppGenAI.csproj -c Debug -p:Platform=x64`.
+3. Launch from Visual Studio (F5) or run `ChatAppGenAI/bin/Debug/net8.0-windows10.0.19041.0/win-x64/ChatAppGenAI.exe`.
+4. When the window opens, wait for the "Model loaded" debug output, type a prompt, and press Enter. Use the **Start New Conversation** button to clear history and reapply the system message.
 
-The model can be downloaded from the following link:
-- https://huggingface.co/microsoft/Phi-3-mini-4k-instruct-onnx
+## Configuration Tips
+- Replace the hard-coded `pathHead` with `AppContext.BaseDirectory` or expose a settings UI if you need portable builds.
+- `Phi4Runner.MaxContextTokens` governs how aggressively old turns are trimmed; tweak it for smaller GPUs.
+- The MVVM layer (`VM`) centralizes dispatcher access via a helper, which keeps UI updates safe when streaming from background threads.
 
-Huggingface models are in repositories which you can clone to get the model files. Clone the Phi3 model repository and copy the required files to the phi3 folder in the project.
+## Troubleshooting
+- **Model not found** – ensure `model.onnx` exists at `Phi4Runner.ModelPath` and the process has read permission.
+- **No GPU acceleration** – verify DirectML-compatible drivers are installed; otherwise switch to the CPU provider by changing the NuGet dependency.
+- **Stalled UI** – confirm the dispatcher helper in `MainWindow.xaml.cs` is receiving a valid `DispatcherQueue` (already fixed by initializing it before subscribing to events).
+- **Package restore errors** – run `nuget locals all -clear`, then `dotnet restore` to refresh the cache.
 
-Phi-3-mini-4k-instruct-onnx has 3 different versions inside it's repo. We are using the DirectML versions in this project.
-Copy the contents of the "directml/directml-int4-awq-block-128" folder to the phi3 folder in the solution.
-
-You don't need to modify the *.csproj, as it is already including all the files in the phi3 folder to the output directory.
-
-The final folder structure should look like this:
-
-```
-ChatAppGenAI
-├── phi3
-│   ├── added_tokens.json
-│   ├── genai_config.json
-│   ├── model.onnx
-│   ├── model.onnx.data
-│   ├── special_tokens_map.json
-│   ├── tokenizer.json
-│   ├── tokenizer.model
-│   ├── tokenizer_config.json
-```
+Customize the runner, prompts, or Semantic Kernel integration to adapt the sample into your own on-device AI assistant.
